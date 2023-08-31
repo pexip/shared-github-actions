@@ -1,0 +1,42 @@
+name: Production pipeline
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: environment
+        description: Environment to run against
+        required: true
+
+jobs:
+  docker-build:
+    runs-on: [self-hosted, linux, X64]
+    environment: production
+    outputs:
+      tags: ${{ env.DOCKER_METADATA_OUTPUT_TAGS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: pexip/shared-github-actions/.github/actions/docker-build-gcp
+        with:
+          image_name: ${{ vars.DOCKER_IMAGE }}
+          dockerfile: Dockerfile.debian
+          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
+          token: ${{ secrets.SIGNALWIRE_TOKEN }}
+
+  terraform-deploy:
+    needs: docker-build
+    runs-on: [self-hosted, linux, X64]
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set Terraform variables
+        shell: bash
+        run: |
+          echo "TF_VAR_project_id=${{ vars.DEPLOY_PROJECT_ID }}" >> $GITHUB_ENV
+          echo "TF_VAR_container=${{ needs.docker-build.outputs.tags }}" >> $GITHUB_ENV
+      - uses: pexip/shared-github-actions/.github/actions/terraform-deploy-gcp
+        with:
+          directory: ./deploy
+          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}

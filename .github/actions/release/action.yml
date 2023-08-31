@@ -1,0 +1,51 @@
+name: Create a release
+description: Creates a release on Github and tags the code
+
+inputs:
+  version:
+    required: true
+    description: Release version
+  jira_webhook:
+    required: false
+    description: The Jira webhook URL
+  jira_artifact_name:
+    required: false
+    description: The name of the component to release
+  jira_project_key:
+    required: false
+    description: The jira project key (given issues in project named TEST-123, TEST is the key)
+  github_token:
+    required: false
+    description: The secrets.GITHUB_TOKEN
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create release
+      uses: "actions/github-script@v6"
+      with:
+        github-token: ${{ inputs.GITHUB_TOKEN }}
+        script: |
+          try {
+            const version = '${{ inputs.version }}'
+            const response = await github.rest.repos.createRelease({
+              draft: false,
+              generate_release_notes: true,
+              name: `Release ${version}`,
+              owner: context.repo.owner,
+              prerelease: false,
+              repo: context.repo.repo,
+              tag_name: version,
+            });
+            core.exportVariable('RELEASE_ID', response.data.id);
+            core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
+          } catch (error) {
+            core.setFailed(error.message);
+          }
+    - name: Create Jira release
+      if: inputs.jira_project_key != "" && inputs.jira_webhook != "" && inputs.jira_artifact_name != ""
+      uses: GeoWerkstatt/create-jira-release@v1
+      with:
+        jira-project-key: ${{ inputs.jira_project_key }}
+        jira-automation-webhook: ${{ inputs.jira_webhook }}
+        build-version: ${{ inputs.jira_artifact_name }}-${{ inputs.version }}

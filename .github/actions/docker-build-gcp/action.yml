@@ -1,0 +1,60 @@
+name: Build and publish a Docker image to GCP
+description: Builds and pushes a docker image to a GCP hosted docker repository
+
+inputs:
+  image_name:
+    required: true
+    description: Name of docker image to build and publish
+  dockerfile:
+    required: true
+    description: The docker file to use when building the image
+  service_account_key:
+    required: true
+    description: The GCP service account to use to push the docker image
+  token:
+    required: false
+    description: A token used by the Dockerfile
+
+runs:
+  using: "composite"
+  steps:
+    - name: Authenticate towards google
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ inputs.service_account_key }}
+
+    - name: Setup gcloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+
+    - name: Setup gcloud credentials helper
+      shell: bash
+      run: |
+        gcloud auth configure-docker -q
+
+    - name: Docker metadata
+      id: metadata
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ inputs.image_name }}
+        tags: |
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value={{sha}},enable=${{ github.ref_type != 'tag' }}
+
+    - name: Set up Docker Buildx to enable caching
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build and push Docker image
+      env:
+        TOKEN:  ${{ inputs.TOKEN }}
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          TOKEN=${{ inputs.token }}
+        file: ${{ inputs.dockerfile }}
+        push: true
+        tags: ${{ steps.metadata.outputs.tags }},${{ inputs.image_name }}:latest
+        labels: ${{ steps.metadata.outputs.labels }}

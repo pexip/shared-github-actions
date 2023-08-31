@@ -1,0 +1,134 @@
+name: Terraform deploy
+description: Deploys resources to GCP using terraform
+
+inputs:
+  directory:
+    required: true
+    default: ./deploy
+    description: The directory within the repo containing the terraform code
+  service_account_key:
+    required: true
+    description: The GCP service account to used to create resources in GCP
+  token:
+    required: false
+    description: The secrets.GITHUB_TOKEN
+
+runs:
+  using: "composite"
+  steps:
+    - name: Authenticate towards google
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ inputs.service_account_key }}
+
+    - name: Setup gcloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Init
+      id: init
+      working-directory: ${{ inputs.directory }}
+      shell: bash
+      run: terraform init
+
+    - name: Terraform Format
+      id: fmt
+      working-directory: ${{ inputs.directory }}
+      shell: bash
+      run: terraform fmt -check
+      continue-on-error: true
+
+    - name: Terraform Validate
+      id: validate
+      working-directory: ${{ inputs.directory }}
+      shell: bash
+      run: terraform validate -no-color
+      continue-on-error: true
+
+    - name: Terraform Plan
+      id: plan
+      if: github.event_name == 'pull_request'
+      working-directory: ${{ inputs.directory }}
+      shell: bash
+      run: |
+        terraform plan -out terraform.plan
+        terraform show -no-color terraform.plan > terraform.plan.txt
+      continue-on-error: true
+
+    - name: Archive terraform plan
+      id: upload
+      if: github.event_name == 'push'
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform.plan.txt
+        path: ${{ inputs.directory }}/terraform.plan.txt
+
+    - name: Pull Request Comment
+      uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN: "${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{ inputs.token }}
+        script: |
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          })
+          const botComment = comments.find(comment => {
+            return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+          })
+
+          const output = `#### Terraform Format and Style 🖌 \`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️ \`${{ steps.init.outcome }}\`
+          #### Terraform Validation 🤖 \`${{ steps.validate.outcome }}\`
+          <details><summary>Validation Output</summary>
+
+          \`\`\`\n
+          ${{ steps.validate.outputs.stdout }}
+          \`\`\`
+
+          </details>
+
+          #### Terraform Plan 📖 \`${{ steps.plan.outcome }}\`
+
+          <details><summary>Show Plan</summary>
+
+          \`\`\`terraform\n
+          ${process.env.PLAN}
+          \`\`\`
+
+          </details>`;
+
+          if (botComment) {
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: output
+            })
+          } else {
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+          }
+
+    - name: Terraform Status
+      id: status
+      if: steps.plan.outcome == 'failure' || steps.validate.outcome == 'failure' || steps.init.outcome == 'failure' || steps.fmt.outcome == 'failure'
+      working-directory: ${{ inputs.directory }}
+      shell: bash
+      run: exit 1
+
+    - name: Terraform Apply
+      id: apply
+      if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push'
+      working-directory: ${{ inputs.directory }}
+      shell: bash
+      run: terraform apply -auto-approve
