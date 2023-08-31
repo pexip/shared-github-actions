@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - uses: pexip/shared-github-actions/.github/actions/docker-build-gcp
+      - uses: pexip/shared-github-actions/.github/actions/docker-build-gcp@master
         with:
           image_name: ${{ vars.DOCKER_IMAGE }}
           dockerfile: Dockerfile.debian
@@ -44,7 +44,7 @@ jobs:
         run: |
           echo "TF_VAR_project_id=${{ vars.DEPLOY_PROJECT_ID }}" >> $GITHUB_ENV
           echo "TF_VAR_container=${{ needs.docker-build.outputs.tags }}" >> $GITHUB_ENV
-      - uses: pexip/shared-github-actions/.github/actions/terraform-deploy-gcp
+      - uses: pexip/shared-github-actions/.github/actions/terraform-deploy-gcp@master
         with:
           directory: ./deploy
           service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}

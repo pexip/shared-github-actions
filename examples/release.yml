@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - uses: pexip/shared-github-actions/.github/actions/release
+      - uses: pexip/shared-github-actions/.github/actions/release@master
         with:
           version: ${{ inputs.VERSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
