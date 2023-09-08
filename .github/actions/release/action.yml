@@ -32,7 +32,7 @@ runs:
         script: |
           try {
             const version = '${{ inputs.version }}'
-            const pre-release = '${{ inputs.pre-release }}'
+            const pre-release = ${{ inputs.pre-release }}
             const response = await github.rest.repos.createRelease({
               draft: false,
               generate_release_notes: true,
