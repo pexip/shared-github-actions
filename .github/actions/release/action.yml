@@ -5,6 +5,10 @@ inputs:
   version:
     required: true
     description: Release version
+  pre-release:
+    type: boolean
+    default: false
+    description: Is this a pre-release?
   jira_webhook:
     required: false
     description: The Jira webhook URL
@@ -28,12 +32,13 @@ runs:
         script: |
           try {
             const version = '${{ inputs.version }}'
+            const pre-release = '${{ inputs.pre-release }}'
             const response = await github.rest.repos.createRelease({
               draft: false,
               generate_release_notes: true,
               name: `Release ${version}`,
               owner: context.repo.owner,
-              prerelease: false,
+              prerelease: ${pre-release}`,
               repo: context.repo.repo,
               tag_name: version,
             });
@@ -43,7 +48,7 @@ runs:
             core.setFailed(error.message);
           }
     - name: Create Jira release
-      if: inputs.jira_project_key != "" && inputs.jira_webhook != "" && inputs.jira_artifact_name != ""
+      if: ${{ inputs.jira_project_key != "" && inputs.jira_webhook != "" && inputs.jira_artifact_name != "" }}
       uses: GeoWerkstatt/create-jira-release@v1
       with:
         jira-project-key: ${{ inputs.jira_project_key }}
