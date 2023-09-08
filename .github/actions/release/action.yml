@@ -38,7 +38,7 @@ runs:
               generate_release_notes: true,
               name: `Release ${version}`,
               owner: context.repo.owner,
-              prerelease: ${pre_release}`,
+              prerelease: `${pre_release}`,
               repo: context.repo.repo,
               tag_name: version,
             });
