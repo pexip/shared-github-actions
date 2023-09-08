@@ -20,5 +20,5 @@ jobs:
       - uses: ./.github/actions/release
         with:
           version: ${{ inputs.VERSION }}
-          pre-release: ${{ inputs.PRE_RELEASE }}
+          pre_release: ${{ inputs.PRE_RELEASE }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
