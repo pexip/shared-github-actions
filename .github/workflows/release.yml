@@ -5,10 +5,10 @@ on:
       version:
         description: Release version
         required: true
-      pre-release:
+      pre_release:
         type: boolean
         default: false
-        description: Is this a pre-release?
+        description: Pre-release?
 
 jobs:
   release:
@@ -20,5 +20,5 @@ jobs:
       - uses: ./.github/actions/release
         with:
           version: ${{ inputs.VERSION }}
-          pre-release: ${{ inputs.PRE-RELEASE }}
+          pre-release: ${{ inputs.PRE_RELEASE }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
