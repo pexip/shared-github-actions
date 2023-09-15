@@ -51,9 +51,9 @@ runs:
       id: tfsec
       uses: aquasecurity/tfsec-action@v1.0.3
       with:
-#        soft_fail: false
-#        additional_args: --no-color
-#        working_directory: ${{ inputs.directory }}
+        soft_fail: false
+        additional_args: --no-color
+        working_directory: ${{ inputs.directory }}
         github_token: ${{ inputs.token }}
 
     - name: Terraform Plan
