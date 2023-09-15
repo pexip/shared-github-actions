@@ -50,9 +50,9 @@ runs:
     - name: Terraform Security Check
       id: tfsec
       working-directory: ${{ inputs.directory }}
-      uses: aquasecurity/tfsec-action@v1.0.0
+      uses: aquasecurity/tfsec-action@v1.0.3
       with:
-        soft_fail: true
+        soft_fail: false
         additional_args: --no-color
         working_directory: ${{ inputs.directory }}
         github_token: ${{ inputs.token }}
