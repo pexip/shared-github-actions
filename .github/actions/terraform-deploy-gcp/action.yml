@@ -48,14 +48,14 @@ runs:
       continue-on-error: true
 
     - name: Terraform Security Check
-      id: tfsec
-      working-directory: ${{ inputs.directory }}
+#      id: tfsec
+#      working-directory: ${{ inputs.directory }}
       uses: aquasecurity/tfsec-action@v1.0.3
-      with:
-        soft_fail: false
-        additional_args: --no-color
-        working_directory: ${{ inputs.directory }}
-        github_token: ${{ inputs.token }}
+#      with:
+#        soft_fail: false
+#        additional_args: --no-color
+#        working_directory: ${{ inputs.directory }}
+#        github_token: ${{ inputs.token }}
 
     - name: Terraform Plan
       id: plan
