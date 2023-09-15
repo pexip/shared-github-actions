@@ -47,6 +47,16 @@ runs:
       run: terraform validate -no-color
       continue-on-error: true
 
+    - name: Terraform Security Check
+      id: tfsec
+      working-directory: ${{ inputs.directory }}
+      uses: aquasecurity/tfsec-action@v1.0.0
+      with:
+        soft_fail: true
+        additional_args: --no-color
+        working_directory: ${{ inputs.directory }}
+        github_token: ${{ inputs.token }}
+
     - name: Terraform Plan
       id: plan
       if: github.event_name == 'pull_request'
