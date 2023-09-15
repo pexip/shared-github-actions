@@ -1,5 +1,6 @@
 name: Build and publish a Docker image to GCP
 description: Builds and pushes a docker image to a GCP hosted docker repository
+author: "havard.bakke@pexip.com"
 
 inputs:
   image_name:

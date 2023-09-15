@@ -1,5 +1,6 @@
 name: Create a release
 description: Creates a release on Github and tags the code
+author: "havard.bakke@pexip.com"
 
 inputs:
   version:
