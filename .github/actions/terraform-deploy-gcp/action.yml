@@ -54,12 +54,11 @@ runs:
 
     - name: Terraform Security Check
       id: tfsec
-      uses: aquasecurity/tfsec-action@v1.0.3
+      uses: tfsec/tfsec-pr-commenter-action@main
       with:
-        soft_fail: false
-        additional_args: --no-color
-        working_directory: ${{ inputs.directory }}
         github_token: ${{ inputs.token }}
+        soft_fail_commenter: true
+        working_directory: ${{ inputs.directory }}
 
     - name: Terraform Plan
       id: plan
