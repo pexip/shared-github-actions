@@ -10,8 +10,14 @@ inputs:
     required: true
     description: The docker file to use when building the image
   service_account_key:
-    required: true
-    description: The GCP service account to use to push the docker image
+    required: false
+    description: The GCP service account JSON key used to authenticate towards Google
+  service_account:
+    required: false
+    description: The GCP service account used to authenticate towards Google
+  workload_identity_provider:
+    required: false
+    description: The GCP workload identity provider used to authenticate towards Google
   token:
     required: false
     description: A token used by the Dockerfile
@@ -19,10 +25,18 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Authenticate towards google
+    - name: Authenticate towards Google
+      if: ${{ inputs.service_account_key != '' }}
       uses: google-github-actions/auth@v1
       with:
         credentials_json: ${{ inputs.service_account_key }}
+
+    - name: Authenticate towards Google
+      if: ${{ inputs.workload_identity_provider != '' }}
+      uses: google-github-actions/auth@v1
+      with:
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
 
     - name: Setup gcloud SDK
       uses: google-github-actions/setup-gcloud@v1
