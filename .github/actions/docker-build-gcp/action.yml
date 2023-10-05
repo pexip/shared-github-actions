@@ -21,6 +21,9 @@ inputs:
   token:
     required: false
     description: A token used by the Dockerfile
+  snyk_token:
+    required: false
+    description: A token used by Snyk to scan docker image for vulnerabilities
 
 runs:
   using: "composite"
@@ -73,6 +76,15 @@ runs:
         push: true
         tags: ${{ steps.metadata.outputs.tags }},${{ inputs.image_name }}:latest
         labels: ${{ steps.metadata.outputs.labels }}
+
+    - name: Security scan docker image
+      id: snyk
+      if: ${{ inputs.snyk_token != '' }}
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ inputs.SNYK_TOKEN }}
+      with:
+        image: ${{ steps.metadata.outputs.tags }}
 
     - name: Generate job summary
       shell: bash
