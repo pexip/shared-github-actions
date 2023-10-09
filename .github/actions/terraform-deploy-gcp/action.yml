@@ -37,6 +37,7 @@ runs:
       if: ${{ inputs.workload_identity_provider != '' }}
       uses: google-github-actions/auth@v1
       with:
+        token_format: access_token
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
         service_account: ${{ inputs.service_account }}
 
