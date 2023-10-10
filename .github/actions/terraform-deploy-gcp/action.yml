@@ -41,6 +41,11 @@ runs:
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
         service_account: ${{ inputs.service_account }}
 
+    - name: Configure Docker repository
+      working-directory: ${{ inputs.directory }}
+      shell: bash
+      run: gcloud auth configure-docker europe-west2-docker.pkg.dev
+
     - name: Setup gcloud SDK
       uses: google-github-actions/setup-gcloud@v1
 
