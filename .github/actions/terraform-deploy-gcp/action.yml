@@ -11,6 +11,9 @@ inputs:
     required: true
     default: ./deploy
     description: The directory within the repo containing the terraform code
+  repository:
+    required: true
+    description: The repository to deploy to
   service_account_key:
     required: false
     description: The GCP service account to used to create resources in GCP
@@ -48,7 +51,7 @@ runs:
       if: ${{ inputs.workload_identity_provider != '' }}
       working-directory: ${{ inputs.directory }}
       shell: bash
-      run: gcloud auth configure-docker europe-west2-docker.pkg.dev
+      run: gcloud auth configure-docker ${{ inputs.repository }}
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2

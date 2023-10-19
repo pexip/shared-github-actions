@@ -28,5 +28,6 @@ jobs:
       - uses: pexip/shared-github-actions/.github/actions/terraform-deploy-gcp@master
         with:
           directory: ./deploy
+          repository: ${{ vars.DOCKER_REPO }}
           service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
           token: ${{ secrets.GITHUB_TOKEN }}
