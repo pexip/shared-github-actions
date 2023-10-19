@@ -77,7 +77,7 @@ runs:
           TOKEN=${{ inputs.token }}
         file: ${{ inputs.dockerfile }}
         push: true
-        tags: ${{ steps.metadata.outputs.tags }},${{ inputs.image_name }}:latest
+        tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}
 
     - name: Security scan docker image
