@@ -95,6 +95,6 @@ runs:
         echo "Built docker image:" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
         echo "- Name: ${{ inputs.image_name }}" >> $GITHUB_STEP_SUMMARY        
-        echo "- TAGS: ${{ steps.metadata.outputs.tags }},${{ inputs.image_name }}:latest" >> $GITHUB_STEP_SUMMARY
+        echo "- TAGS: ${{ steps.metadata.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
         echo "- LABELS: ${{ steps.metadata.outputs.labels }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
