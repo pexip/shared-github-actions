@@ -50,7 +50,6 @@ runs:
       uses: google-github-actions/setup-gcloud@v1
 
     - name: Configure Docker repository
-      if: ${{ inputs.workload_identity_provider != '' }}
       working-directory: ${{ inputs.directory }}
       shell: bash
       run: gcloud auth configure-docker ${{ inputs.repository }}
