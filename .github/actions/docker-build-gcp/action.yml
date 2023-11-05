@@ -3,6 +3,9 @@ description: Builds and pushes a docker image to a GCP hosted docker repository
 author: "havard.bakke@pexip.com"
 
 inputs:
+  repository:
+    required: true
+    description: The repository to deploy to
   image_name:
     required: true
     description: Name of docker image to build and publish
@@ -46,10 +49,11 @@ runs:
     - name: Setup gcloud SDK
       uses: google-github-actions/setup-gcloud@v1
 
-    - name: Setup gcloud credentials helper
+    - name: Configure Docker repository
+      if: ${{ inputs.workload_identity_provider != '' }}
+      working-directory: ${{ inputs.directory }}
       shell: bash
-      run: |
-        gcloud auth configure-docker -q
+      run: gcloud auth configure-docker ${{ inputs.repository }}
 
     - name: Docker metadata
       id: metadata
