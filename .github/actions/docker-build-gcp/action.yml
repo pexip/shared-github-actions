@@ -59,7 +59,7 @@ runs:
       id: metadata
       uses: docker/metadata-action@v5
       with:
-        images: ${{ inputs.image_name }}
+        images: ${{ inputs.repository }}/${{ inputs.image_name }}
         tags: |
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
@@ -98,7 +98,7 @@ runs:
       run: |
         echo "Built docker image:" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
-        echo "- Name: ${{ inputs.image_name }}" >> $GITHUB_STEP_SUMMARY        
+        echo "- Name:  ${{ inputs.repository }}/${{ inputs.image_name }}" >> $GITHUB_STEP_SUMMARY        
         echo "- TAGS: ${{ steps.metadata.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
         echo "- LABELS: ${{ steps.metadata.outputs.labels }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
