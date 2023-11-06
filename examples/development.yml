@@ -1,11 +1,5 @@
 name: Development pipeline
 on:
-  push:
-    branches:
-      - master
-      - main
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
   pull_request:
     branches:
       - '*'
@@ -18,7 +12,7 @@ on:
 
 jobs:
   docker-build:
-    runs-on: [self-hosted, linux, X64]
+    runs-on: ubuntu-latest
     environment: development
     outputs:
       tags: ${{ env.DOCKER_METADATA_OUTPUT_TAGS }}
@@ -34,7 +28,7 @@ jobs:
 
   terraform-deploy:
     needs: docker-build
-    runs-on: [self-hosted, linux, X64]
+    runs-on: ubuntu-latest
     environment: development
     steps:
       - name: Checkout
@@ -47,5 +41,6 @@ jobs:
       - uses: pexip/shared-github-actions/.github/actions/terraform-deploy-gcp@master
         with:
           directory: ./deploy
+          repository: ${{ vars.DOCKER_REPO }}
           service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
           token: ${{ secrets.GITHUB_TOKEN }}
