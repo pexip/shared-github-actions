@@ -62,6 +62,7 @@ runs:
         tags: |
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}},value=${{ input.TAG }}
           type=raw,value=latest,enable={{is_default_branch}}
           type=sha,enable=true,priority=100,prefix=,suffix=,format=long
 
@@ -99,5 +100,4 @@ runs:
         echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
         echo "- Name:  ${{ inputs.repository }}/${{ inputs.image_name }}" >> $GITHUB_STEP_SUMMARY        
         echo "- TAGS: ${{ steps.metadata.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
-        echo "- LABELS: ${{ steps.metadata.outputs.labels }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
