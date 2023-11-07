@@ -9,6 +9,9 @@ inputs:
   image_name:
     required: true
     description: Name of docker image to build and publish
+  tag:
+    required: false
+    description: Optional tag to apply to the docker image
   dockerfile:
     required: true
     default: ./Dockerfile
@@ -62,7 +65,7 @@ runs:
         tags: |
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
-          type=semver,pattern={{major}},value=${{ input.TAG }}
+          type=raw,value=${{ input.TAG }},enable=${{ input.TAG != '' }}
           type=raw,value=latest,enable={{is_default_branch}}
           type=sha,enable=true,priority=100,prefix=,suffix=,format=long
 
