@@ -85,6 +85,7 @@ runs:
       with:
         scan-ref: ${{ inputs.directory }}
         scan-type: 'fs'
+        hide-progress: false
         scanners: 'secret, config'
         format: 'table'
         exit-code: '1'
