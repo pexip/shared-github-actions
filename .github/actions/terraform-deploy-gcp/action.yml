@@ -83,8 +83,9 @@ runs:
       id: trivy
       uses: aquasecurity/trivy-action@master
       with:
-        scan-type: 'config'
-        format: 'github'
+        scan-type: 'fs'
+        scanners: 'secret, config'
+        format: 'table'
         exit-code: '1'
         ignore-unfixed: true
         severity: 'CRITICAL,HIGH'
