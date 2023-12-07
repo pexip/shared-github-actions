@@ -88,6 +88,7 @@ runs:
         exit-code: '1'
         ignore-unfixed: true
         severity: 'CRITICAL,HIGH'
+        github-pat: ${{ secrets.GITHUB_TOKEN }}
       continue-on-error: ${{ inputs.continue_on_security_warnings == 'true' }}
 
     - name: Terraform Plan
