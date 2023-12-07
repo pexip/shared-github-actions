@@ -7,6 +7,10 @@ inputs:
     required: false
     description: Should pull requests be deployed
     default: false
+  continue_on_security_warnings:
+    required: false
+    description: Should the pipeline block on security warnings
+    default: true
   directory:
     required: true
     default: ./deploy
@@ -80,11 +84,12 @@ runs:
       uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'config'
-        hide-progress: false
+        hide-progress: true
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
         severity: 'CRITICAL,HIGH'
+      continue-on-error: ${{ inputs.continue_on_security_warnings }}
 
     - name: Terraform Plan
       id: plan
