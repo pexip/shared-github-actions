@@ -90,7 +90,7 @@ runs:
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
-        severity: 'CRITICAL,HIGH'
+        severity: 'MEDIUM,HIGH,CRITICAL'
         github-pat: ${{ inputs.token }}
       continue-on-error: ${{ inputs.continue_on_security_warnings == 'true' }}
 
