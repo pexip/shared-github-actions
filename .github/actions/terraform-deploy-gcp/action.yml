@@ -92,7 +92,7 @@ runs:
 
     - name: Terraform Plan
       id: plan
-      if: github.event_name == 'pull_request'
+#      if: github.event_name == 'pull_request'
       working-directory: ${{ inputs.directory }}
       shell: bash
       run: |
