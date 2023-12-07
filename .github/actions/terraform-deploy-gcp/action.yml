@@ -84,12 +84,11 @@ runs:
       uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'config'
-        hide-progress: true
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
         severity: 'CRITICAL,HIGH'
-      continue-on-error: ${{ inputs.continue_on_security_warnings }}
+      continue-on-error: ${{ inputs.continue_on_security_warnings == 'true' }}
 
     - name: Terraform Plan
       id: plan
