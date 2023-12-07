@@ -83,6 +83,7 @@ runs:
       id: trivy
       uses: aquasecurity/trivy-action@master
       with:
+        scan-ref: ${{ inputs.directory }}
         scan-type: 'fs'
         scanners: 'secret, config'
         format: 'table'
