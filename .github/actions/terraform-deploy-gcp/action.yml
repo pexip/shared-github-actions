@@ -10,7 +10,7 @@ inputs:
   continue_on_security_warnings:
     required: false
     description: Should the pipeline block on security warnings
-    default: true
+    default: false
   directory:
     required: true
     default: ./deploy
