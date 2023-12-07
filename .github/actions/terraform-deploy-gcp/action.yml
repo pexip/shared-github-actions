@@ -75,13 +75,14 @@ runs:
       run: terraform validate -no-color
       continue-on-error: true
 
-    - name: Terraform Security Check
-      id: tfsec
-      uses: tfsec/tfsec-pr-commenter-action@main
+    - name: Run Trivy vulnerability scanner
+      id: trivy
+      uses: aquasecurity/trivy-action@master
       with:
-        github_token: ${{ inputs.token }}
-        soft_fail_commenter: true
-        working_directory: ${{ inputs.directory }}
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        severity: 'CRITICAL,HIGH'
 
     - name: Terraform Plan
       id: plan
@@ -92,14 +93,6 @@ runs:
         terraform plan -out terraform.plan
         terraform show -no-color terraform.plan > terraform.plan.txt
       continue-on-error: true
-
-    - name: Archive terraform plan
-      id: upload
-      if: github.event_name == 'push'
-      uses: actions/upload-artifact@v3
-      with:
-        name: terraform.plan.txt
-        path: ${{ inputs.directory }}/terraform.plan.txt
 
     - name: Pull Request Comment
       uses: actions/github-script@v6
@@ -157,7 +150,7 @@ runs:
 
     - name: Terraform Status
       id: status
-      if: steps.plan.outcome == 'failure' && github.event_name == 'pull_request' || steps.validate.outcome == 'failure' || steps.init.outcome == 'failure' || steps.fmt.outcome == 'failure'
+      if: steps.validate.outcome == 'failure' || steps.init.outcome == 'failure' || steps.fmt.outcome == 'failure'
       working-directory: ${{ inputs.directory }}
       shell: bash
       run: exit 1
