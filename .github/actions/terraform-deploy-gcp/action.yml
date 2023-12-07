@@ -93,7 +93,6 @@ runs:
 
     - name: Terraform Plan
       id: plan
-      if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
       working-directory: ${{ inputs.directory }}
       shell: bash
       run: |
@@ -157,7 +156,7 @@ runs:
 
     - name: Terraform Status
       id: status
-      if: steps.validate.outcome == 'failure' || steps.init.outcome == 'failure' || steps.fmt.outcome == 'failure'
+      if: steps.plan.outcome == 'failure' || steps.validate.outcome == 'failure' || steps.init.outcome == 'failure' || steps.fmt.outcome == 'failure'
       working-directory: ${{ inputs.directory }}
       shell: bash
       run: exit 1
