@@ -162,7 +162,12 @@ runs:
       if: steps.plan.outcome == 'failure' || steps.validate.outcome == 'failure' || steps.init.outcome == 'failure' || steps.fmt.outcome == 'failure'
       working-directory: ${{ inputs.directory }}
       shell: bash
-      run: exit 1
+      run: |
+        echo Terraform Plan: ${{ steps.plan.outcome }}
+        echo Terraform Validate: ${{ steps.validate.outcome }}
+        echo Terraform Init: ${{ steps.init.outcome }}
+        echo Terraform Fmt: ${{ steps.fmt.outcome }}
+        exit 1
 
     - name: Terraform Apply
       id: apply
