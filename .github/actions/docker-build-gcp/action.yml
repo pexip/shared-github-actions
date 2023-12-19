@@ -9,6 +9,10 @@ inputs:
   image_name:
     required: true
     description: Name of docker image to build and publish
+  push_image:
+    required: false
+    description: Should the image be pushed to the repository
+    default: true
   tag:
     required: false
     description: Optional tag to apply to the docker image
@@ -83,7 +87,7 @@ runs:
         build-args: |
           TOKEN=${{ inputs.token }}
         file: ${{ inputs.dockerfile }}
-        push: true
+        push: ${{ inputs.push_image }}
         tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}
 
