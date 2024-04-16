@@ -59,7 +59,7 @@ runs:
     - name: Configure Docker repository
       working-directory: ${{ inputs.directory }}
       shell: bash
-      run: gcloud auth configure-docker ${{ inputs.repository }}
+      run: yes | gcloud auth configure-docker ${{ inputs.repository }}
 
     - name: Docker metadata
       id: metadata
