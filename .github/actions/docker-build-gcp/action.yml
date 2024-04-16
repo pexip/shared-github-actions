@@ -91,6 +91,11 @@ runs:
         tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}
 
+    - name: Configure Docker Auth for Snyk
+      if: ${{ inputs.snyk_token != '' }}
+      shell: bash
+      run: cp $HOME/.docker/config.json $HOME/dockercfg.json
+
     - name: Security scan docker image
       id: snyk
       if: ${{ inputs.snyk_token != '' }}
