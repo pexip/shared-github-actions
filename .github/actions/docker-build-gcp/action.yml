@@ -103,7 +103,7 @@ runs:
       env:
         SNYK_TOKEN: ${{ inputs.SNYK_TOKEN }}
       run: |
-        snyk container test ${{ steps.metadata.outputs.tags }}
+        snyk container test ${{ steps.metadata.outputs.tags }} --severity-threshold=medium --file=${{ inputs.dockerfile }}
 
     - name: Generate job summary
       shell: bash
