@@ -3,13 +3,13 @@ description: Security scans a docker image using Snyk
 author: "havard.bakke@pexip.com"
 
 inputs:
-  image_name:
+  image:
     required: true
-    description: Name of docker image to build and publish
+    description: Name of docker image to scan
   dockerfile:
     required: true
     default: ./Dockerfile
-    description: The docker file to use when building the image
+    description: The docker file used when building the image
   service_account_key:
     required: false
     description: The GCP service account JSON key used to authenticate towards Google
@@ -25,7 +25,7 @@ inputs:
   snyk_threshold:
     required: false
     default: medium
-    description: Snyk severity treshold
+    description: Snyk severity threshold
 runs:
   using: "composite"
   steps:
@@ -63,4 +63,4 @@ runs:
       env:
         SNYK_TOKEN: ${{ inputs.SNYK_TOKEN }}
       run: |
-        snyk container test ${{ steps.metadata.outputs.tags }} --severity-threshold=${{ inputs.snyk_threshold }} --file=${{ inputs.dockerfile }}
+        snyk container test ${{ inputs.image }} --severity-threshold=${{ inputs.snyk_threshold }} --file=${{ inputs.dockerfile }}
