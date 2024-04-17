@@ -94,7 +94,9 @@ runs:
     - name: Configure Docker Auth for Snyk
       if: ${{ inputs.snyk_token != '' }}
       shell: bash
-      run: cp ~/.docker/config.json ~/dockercfg.json
+      run: |
+        cp ~/.docker/config.json ~/dockercfg.json
+        cat ~/dockercfg.json
 
     - name: Security scan docker image
       id: snyk
