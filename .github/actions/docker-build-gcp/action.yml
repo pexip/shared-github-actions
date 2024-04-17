@@ -103,6 +103,14 @@ runs:
         tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}
 
+    - name: Set output
+      id: outputs
+      working-directory: ${{ inputs.directory }}
+      shell: bash
+      run: |
+        echo "::set-output name=image::${{ steps.metadata.outputs.tags }}"
+        echo "::set-output name=dockerfile::${{ inputs.dockerfile }}"
+
 #    - name: Setup Snyk
 #      id: snyk-setup
 #      if: ${{ inputs.snyk_token != '' }}
