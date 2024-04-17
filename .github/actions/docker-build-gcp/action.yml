@@ -32,13 +32,22 @@ inputs:
   token:
     required: false
     description: A token used by the Dockerfile
-  snyk_token:
-    required: false
-    description: A token used by Snyk to scan docker image for vulnerabilities
-  snyk_treshold:
-    required: false
-    default: medium
-    description: Snyk severity treshold
+#  snyk_token:
+#    required: false
+#    description: A token used by Snyk to scan docker image for vulnerabilities
+#  snyk_treshold:
+#    required: false
+#    default: medium
+#    description: Snyk severity treshold
+
+outputs:
+  docker_image:
+    description: "Docker Image"
+    value: ${{ steps.metadata.outputs.tags }}
+  docker_file:
+    description: "Docker File"
+    value: ${{ inputs.dockerfile }}
+
 runs:
   using: "composite"
   steps:
@@ -94,19 +103,19 @@ runs:
         tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}
 
-    - name: Setup Snyk
-      id: snyk-setup
-      if: ${{ inputs.snyk_token != '' }}
-      uses: snyk/actions/setup@master
-
-    - name: Security scan docker image
-      id: snyk
-      if: ${{ inputs.snyk_token != '' }}
-      shell: bash
-      env:
-        SNYK_TOKEN: ${{ inputs.SNYK_TOKEN }}
-      run: |
-        snyk container test ${{ steps.metadata.outputs.tags }} --severity-threshold=${{ inputs.snyk_treshold }} --file=${{ inputs.dockerfile }}
+#    - name: Setup Snyk
+#      id: snyk-setup
+#      if: ${{ inputs.snyk_token != '' }}
+#      uses: snyk/actions/setup@master
+#
+#    - name: Security scan docker image
+#      id: snyk
+#      if: ${{ inputs.snyk_token != '' }}
+#      shell: bash
+#      env:
+#        SNYK_TOKEN: ${{ inputs.SNYK_TOKEN }}
+#      run: |
+#        snyk container test ${{ steps.metadata.outputs.tags }} --severity-threshold=${{ inputs.snyk_treshold }} --file=${{ inputs.dockerfile }}
 
     - name: Generate job summary
       shell: bash
