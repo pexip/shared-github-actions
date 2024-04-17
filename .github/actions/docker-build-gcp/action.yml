@@ -91,7 +91,7 @@ runs:
         tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}
 
-    - name: Setup SNYK
+    - name: Setup Snyk
       id: snyk-setup
       if: ${{ inputs.snyk_token != '' }}
       uses: snyk/actions/setup@master
@@ -103,8 +103,7 @@ runs:
       env:
         SNYK_TOKEN: ${{ inputs.SNYK_TOKEN }}
       run: |
-        snyk container test ${{ steps.metadata.outputs.tags }} --json > snyk-report.json
-        cat snyk-report.json
+        snyk container test ${{ steps.metadata.outputs.tags }}
 
     - name: Generate job summary
       shell: bash
