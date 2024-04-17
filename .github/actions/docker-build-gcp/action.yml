@@ -91,21 +91,20 @@ runs:
         tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}
 
-    - name: Configure Docker Auth for Snyk
+    - name: Setup SNYK
+      id: snyk-setup
       if: ${{ inputs.snyk_token != '' }}
-      shell: bash
-      run: |
-        cp ~/.docker/config.json ~/dockercfg.json
-        cat ~/dockercfg.json
+      uses: snyk/actions/setup@master
 
     - name: Security scan docker image
       id: snyk
       if: ${{ inputs.snyk_token != '' }}
-      uses: snyk/actions/docker@master
+      shell: bash
       env:
         SNYK_TOKEN: ${{ inputs.SNYK_TOKEN }}
-      with:
-        image: ${{ steps.metadata.outputs.tags }}
+      run: |
+        snyk container test ${{ steps.metadata.outputs.tags }} --json > snyk-report.json
+        cat snyk-report.json
 
     - name: Generate job summary
       shell: bash
