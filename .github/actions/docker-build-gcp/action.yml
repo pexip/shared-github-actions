@@ -108,8 +108,8 @@ runs:
       working-directory: ${{ inputs.directory }}
       shell: bash
       run: |
-        echo "::set-output name=image::${{ steps.metadata.outputs.tags }}"
-        echo "::set-output name=dockerfile::${{ inputs.dockerfile }}"
+        echo "image=${{ steps.metadata.outputs.tags }}" >> $GITHUB_OUTPUT
+        echo "dockerfile=${{ inputs.dockerfile }}" >> $GITHUB_OUTPUT
 
 #    - name: Setup Snyk
 #      id: snyk-setup
