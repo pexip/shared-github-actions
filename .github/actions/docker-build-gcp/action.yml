@@ -41,10 +41,10 @@ inputs:
 #    description: Snyk severity treshold
 
 outputs:
-  docker_image:
+  image:
     description: "Docker Image"
     value: ${{ steps.metadata.outputs.tags }}
-  docker_file:
+  dockerfile:
     description: "Docker File"
     value: ${{ inputs.dockerfile }}
 
