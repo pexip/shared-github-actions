@@ -36,11 +36,9 @@ inputs:
 outputs:
   image:
     description: "Full docker image name"
-    #value: ${{ steps.outputs.outputs.image }}
     value: ${{ steps.metadata.outputs.tags }}
   dockerfile:
     description: "Dockerfile used to build docker image"
-    #value: ${{ steps.outputs.outputs.dockerfile }}
     value: ${{ inputs.dockerfile }}
 
 runs:
@@ -97,14 +95,6 @@ runs:
         push: ${{ inputs.push_image }}
         tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}
-
-#    - name: Set output
-#      id: outputs
-#      working-directory: ${{ inputs.directory }}
-#      shell: bash
-#      run: |
-#        echo "image=${{ steps.metadata.outputs.tags }}" >> $GITHUB_OUTPUT
-#        echo "dockerfile=${{ inputs.dockerfile }}" >> $GITHUB_OUTPUT
 
     - name: Generate job summary
       shell: bash
