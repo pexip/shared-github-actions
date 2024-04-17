@@ -16,15 +16,32 @@ jobs:
     environment: development
     outputs:
       tags: ${{ env.DOCKER_METADATA_OUTPUT_TAGS }}
+      image: ${{ steps.build.outputs.image }}
+      dockerfile: ${{ steps.build.outputs.dockerfile }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - uses: pexip/shared-github-actions/.github/actions/docker-build-gcp@master
+        id: build
         with:
+          repository: ${{ vars.DOCKER_REPO }}
           image_name: ${{ vars.DOCKER_IMAGE }}
           dockerfile: Dockerfile.debian
           service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
-          token: ${{ secrets.SIGNALWIRE_TOKEN }}
+
+  docker-security-scan:
+    needs: docker-build
+    runs-on: [self-hosted, linux, X64]
+    environment: development
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: pexip/shared-github-actions/.github/actions/docker-security-scan@master
+        with:
+          image: ${{ needs.docker-build.outputs.image }}
+          dockerfile: ${{ needs.docker-build.outputs.dockerfile }}
+          snyk_token: ${{ secrets.SNYK_PEXIP_UNSORTED_ACCESS_TOKEN }}
+          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
 
   terraform-deploy:
     needs: docker-build
