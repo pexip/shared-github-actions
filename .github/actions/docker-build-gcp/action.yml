@@ -35,18 +35,18 @@ inputs:
 #  snyk_token:
 #    required: false
 #    description: A token used by Snyk to scan docker image for vulnerabilities
-#  snyk_treshold:
+#  snyk_threshold:
 #    required: false
 #    default: medium
-#    description: Snyk severity treshold
+#    description: Snyk severity threshold
 
 outputs:
   image:
-    description: "Docker Image"
-    value: ${{ steps.metadata.outputs.tags }}
+    description: "Full docker image name"
+    value: ${{ steps.outputs.outputs.image }}
   dockerfile:
-    description: "Docker File"
-    value: ${{ inputs.dockerfile }}
+    description: "Dockerfile used to build docker image"
+    value: ${{ steps.outputs.outputs.dockerfile }}
 
 runs:
   using: "composite"
@@ -103,13 +103,13 @@ runs:
         tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}
 
-#    - name: Set output
-#      id: outputs
-#      working-directory: ${{ inputs.directory }}
-#      shell: bash
-#      run: |
-#        echo "image=${{ steps.metadata.outputs.tags }}" >> $GITHUB_OUTPUT
-#        echo "dockerfile=${{ inputs.dockerfile }}" >> $GITHUB_OUTPUT
+    - name: Set output
+      id: outputs
+      working-directory: ${{ inputs.directory }}
+      shell: bash
+      run: |
+        echo "image=${{ steps.metadata.outputs.tags }}" >> $GITHUB_OUTPUT
+        echo "dockerfile=${{ inputs.dockerfile }}" >> $GITHUB_OUTPUT
 
 #    - name: Setup Snyk
 #      id: snyk-setup
@@ -123,7 +123,7 @@ runs:
 #      env:
 #        SNYK_TOKEN: ${{ inputs.SNYK_TOKEN }}
 #      run: |
-#        snyk container test ${{ steps.metadata.outputs.tags }} --severity-threshold=${{ inputs.snyk_treshold }} --file=${{ inputs.dockerfile }}
+#        snyk container test ${{ steps.metadata.outputs.tags }} --severity-threshold=${{ inputs.snyk_threshold }} --file=${{ inputs.dockerfile }}
 
     - name: Generate job summary
       shell: bash
