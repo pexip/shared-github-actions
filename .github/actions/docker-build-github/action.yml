@@ -57,13 +57,6 @@ runs:
     - name: Set up Docker Buildx to enable caching
       uses: docker/setup-buildx-action@v3
 
-    - name: Debug Dockerfile
-      shell: bash
-      run: |
-        echo $(pwd)
-        ls -la
-        cat ${{ inputs.dockerfile }}
-
     - name: Build and push Docker image
       env:
         TOKEN:  ${{ inputs.TOKEN }}
