@@ -10,15 +10,6 @@ inputs:
     required: true
     default: ./Dockerfile
     description: The docker file used when building the image
-  service_account_key:
-    required: false
-    description: The GCP service account JSON key used to authenticate towards Google
-  service_account:
-    required: false
-    description: The GCP service account used to authenticate towards Google
-  workload_identity_provider:
-    required: false
-    description: The GCP workload identity provider used to authenticate towards Google
   snyk_token:
     required: false
     description: A token used by Snyk to scan docker image for vulnerabilities
@@ -29,28 +20,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Authenticate towards Google
-      if: ${{ inputs.service_account_key != '' }}
-      uses: google-github-actions/auth@v1
-      with:
-        credentials_json: ${{ inputs.service_account_key }}
-
-    - name: Authenticate towards Google
-      if: ${{ inputs.workload_identity_provider != '' }}
-      uses: google-github-actions/auth@v1
-      with:
-        token_format: access_token
-        workload_identity_provider: ${{ inputs.workload_identity_provider }}
-        service_account: ${{ inputs.service_account }}
-
-    - name: Setup gcloud SDK
-      uses: google-github-actions/setup-gcloud@v1
-
-    - name: Configure Docker repository
-      working-directory: ${{ inputs.directory }}
-      shell: bash
-      run: gcloud auth configure-docker ${{ inputs.repository }}
-
     - name: Setup Snyk
       id: snyk-setup
       if: ${{ inputs.snyk_token != '' }}
