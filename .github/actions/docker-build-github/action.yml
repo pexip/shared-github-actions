@@ -57,6 +57,15 @@ runs:
     - name: Set up Docker Buildx to enable caching
       uses: docker/setup-buildx-action@v3
 
+    - name: Show Dockerfile
+      shell: bash
+      run: |
+        echo ########################################
+        echo  Dockerfile: ${{ inputs.dockerfile }}
+        echo ########################################
+        cat ${{ inputs.dockerfile }}
+        echo ########################################
+
     - name: Build and push Docker image
       env:
         TOKEN:  ${{ inputs.TOKEN }}
