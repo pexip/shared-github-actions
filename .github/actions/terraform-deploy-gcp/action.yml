@@ -25,6 +25,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Setup gcloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
