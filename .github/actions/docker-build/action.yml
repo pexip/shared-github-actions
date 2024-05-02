@@ -35,6 +35,9 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Setup gcloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+
     - name: Docker metadata
       id: metadata
       uses: docker/metadata-action@v5
