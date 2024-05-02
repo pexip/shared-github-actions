@@ -17,9 +17,6 @@ inputs:
     required: true
     default: ./Dockerfile
     description: The docker file to use when building the image
-  github_token:
-    required: true
-    description: The Github token used to login to the Github Container Registry
   token:
     required: false
     description: A token used by the Dockerfile
@@ -35,13 +32,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ inputs.github_token }}
-
     - name: Docker metadata
       id: metadata
       uses: docker/metadata-action@v5
