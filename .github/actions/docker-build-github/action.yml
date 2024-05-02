@@ -60,6 +60,7 @@ runs:
     - name: Debug Dockerfile
       shell: bash
       run: |
+        ls -la ${{ inputs.dockerfile }} 
         cat ${{ inputs.dockerfile }}
 
     - name: Build and push Docker image
