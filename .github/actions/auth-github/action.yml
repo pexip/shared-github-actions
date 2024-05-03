@@ -1,0 +1,18 @@
+name: Auth Github
+description: Authenticate with Github Container Registry
+author: "havard.bakke@pexip.com"
+
+inputs:
+  github_token:
+    required: true
+    description: The Github token used to login to the Github Container Registry
+
+runs:
+  using: "composite"
+  steps:
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.github_token }}
