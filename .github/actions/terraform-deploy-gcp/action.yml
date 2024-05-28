@@ -15,9 +15,6 @@ inputs:
     required: true
     default: ./deploy
     description: The directory within the repo containing the terraform code
-  repository:
-    required: true
-    description: The repository to deploy to
   token:
     required: false
     description: The secrets.GITHUB_TOKEN
