@@ -10,6 +10,10 @@ inputs:
     required: true
     default: ./Dockerfile
     description: The docker file used when building the image
+  snyk_platform:
+    required: false
+    default: linux/amd64
+    description: Docker image platform to scan
   snyk_token:
     required: false
     description: A token used by Snyk to scan docker image for vulnerabilities
@@ -35,4 +39,4 @@ runs:
       env:
         SNYK_TOKEN: ${{ inputs.SNYK_TOKEN }}
       run: |
-        snyk container test ${{ inputs.image }} --severity-threshold=${{ inputs.snyk_threshold }} --file=${{ inputs.dockerfile }}
+        snyk container test ${{ inputs.image }} --platform=${{ inputs.snyk_platform }} --severity-threshold=${{ inputs.snyk_threshold }} --file=${{ inputs.dockerfile }}
