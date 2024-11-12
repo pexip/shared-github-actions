@@ -108,21 +108,6 @@ runs:
           ${process.env.PLAN}
           \`\`\`
 
-          </details>
-          
-          #### Debug Information 🐛
-          <details><summary>Show Debug</summary>
-
-          - BotComment:
-            \`\`\`text\n
-            ${botComment ? JSON.stringify(botComment, null, 2) : 'No debug information available'}
-            \`\`\`
-
-          - Comments:
-            \`\`\`json\n
-            ${comments ? JSON.stringify(comments, null, 2) : 'No debug information available'}
-            \`\`\`
-
           </details>`;
 
           if (botComment) {
