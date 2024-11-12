@@ -15,13 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     environment: development
     outputs:
-      tags: ${{ env.DOCKER_METADATA_OUTPUT_TAGS }}
+      tags: ${{ steps.metadata.outputs.tags }}
       image: ${{ steps.build.outputs.image }}
       dockerfile: ${{ steps.build.outputs.dockerfile }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - uses: pexip/shared-github-actions/.github/actions/docker-build-gcp@master
+      - uses: pexip/shared-github-actions/.github/actions/auth-gcp@master
+        id: auth-gcp
+        with:
+          repository: ${{ vars.DOCKER_REPO }}
+          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
+      - uses: pexip/shared-github-actions/.github/actions/docker-build@master
         id: build
         with:
           repository: ${{ vars.DOCKER_REPO }}
@@ -36,6 +41,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - uses: pexip/shared-github-actions/.github/actions/auth-gcp@master
+        id: auth-gcp
+        with:
+          repository: ${{ vars.DOCKER_REPO }}
+          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
       - uses: pexip/shared-github-actions/.github/actions/docker-security-scan@master
         with:
           image: ${{ needs.docker-build.outputs.image }}
@@ -55,6 +65,11 @@ jobs:
         run: |
           echo "TF_VAR_project_id=${{ vars.DEPLOY_PROJECT_ID }}" >> $GITHUB_ENV
           echo "TF_VAR_container=${{ needs.docker-build.outputs.tags }}" >> $GITHUB_ENV
+      - uses: pexip/shared-github-actions/.github/actions/auth-gcp@master
+        id: auth-gcp
+        with:
+          repository: ${{ vars.DOCKER_REPO }}
+          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
       - uses: pexip/shared-github-actions/.github/actions/terraform-deploy-gcp@master
         with:
           directory: ./deploy
