@@ -115,16 +115,15 @@ runs:
 
           - BotComment:
             \`\`\`text\n
-            ${botComment ? botComment.body : 'No debug information available'}
+            ${botComment ? JSON.stringify(botComment, null, 2) : 'No debug information available'}
             \`\`\`
 
           - Comments:
             \`\`\`json\n
-            ${JSON.stringify(comments, null, 2)}
+            ${comments ? JSON.stringify(comments, null, 2) : 'No debug information available'}
             \`\`\`
 
-          </details>
-          `;
+          </details>`;
 
           if (botComment) {
             github.rest.issues.updateComment({
