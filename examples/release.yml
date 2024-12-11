@@ -14,7 +14,7 @@ jobs:
     environment: production
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - uses: pexip/shared-github-actions/.github/actions/release@master
         with:
           version: ${{ inputs.VERSION }}
