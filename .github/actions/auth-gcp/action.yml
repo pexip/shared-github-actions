@@ -21,13 +21,13 @@ runs:
   steps:
     - name: Authenticate towards Google
       if: ${{ inputs.service_account_key != '' }}
-      uses: google-github-actions/auth@v1
+      uses: google-github-actions/auth@v2
       with:
         credentials_json: ${{ inputs.service_account_key }}
 
     - name: Authenticate towards Google
       if: ${{ inputs.workload_identity_provider != '' }}
-      uses: google-github-actions/auth@v1
+      uses: google-github-actions/auth@v2
       with:
         token_format: access_token
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
@@ -35,7 +35,7 @@ runs:
 
     - name: Setup gcloud SDK
       if: ${{ inputs.repository != '' }}
-      uses: google-github-actions/setup-gcloud@v1
+      uses: google-github-actions/setup-gcloud@v2
 
     - name: Configure Docker repository
       if: ${{ inputs.repository != '' }}
