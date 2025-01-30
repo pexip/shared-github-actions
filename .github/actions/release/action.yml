@@ -6,10 +6,6 @@ inputs:
   version:
     required: true
     description: Release version
-  commitish:
-    required: false
-    default: 'master'
-    description: The commitish value that determines where the Git tag is created from. Can be any branch or commit SHA. Unused if the Git tag already exists.
   pre_release:
     type: boolean
     default: false
@@ -45,7 +41,7 @@ runs:
               prerelease: ${{ inputs.pre_release == 'true' }},
               repo: context.repo.repo,
               tag_name: version,
-              target_commitish: ${{ inputs.commitish }}
+              target_commitish: context.sha
             });
             core.exportVariable('RELEASE_ID', response.data.id);
             core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
