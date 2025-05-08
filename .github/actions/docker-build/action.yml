@@ -9,6 +9,10 @@ inputs:
   image_name:
     required: true
     description: Name of docker image to build and publish
+  context:
+    required: false
+    description: The context to use when building the image
+    default: .
   push_image:
     required: false
     description: Should the image be pushed to the repository
@@ -67,7 +71,7 @@ runs:
         TOKEN:  ${{ inputs.TOKEN }}
       uses: docker/build-push-action@v5
       with:
-        context: .
+        context: ${{ inputs.context }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
         build-args: |
