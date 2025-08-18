@@ -73,7 +73,7 @@ runs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         secrets: |
-          "gh_token=${{ inputs.gh_token }}"
+          gh_token=${{ inputs.gh_token }}
         file: ${{ inputs.dockerfile }}
         push: ${{ inputs.push_image }}
         tags: ${{ steps.metadata.outputs.tags }}
