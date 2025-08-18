@@ -24,7 +24,7 @@ inputs:
     required: true
     default: ./Dockerfile
     description: The docker file to use when building the image
-  token:
+  gh_token:
     required: false
     description: A token used by the Dockerfile
 
@@ -69,13 +69,13 @@ runs:
     - name: Build and push Docker image
       env:
         TOKEN:  ${{ inputs.TOKEN }}
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: ${{ inputs.context }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        build-args: |
-          TOKEN=${{ inputs.token }}
+        secrets: |
+          "gh_token=${{ inputs.gh_token }}"
         file: ${{ inputs.dockerfile }}
         push: ${{ inputs.push_image }}
         tags: ${{ steps.metadata.outputs.tags }}
