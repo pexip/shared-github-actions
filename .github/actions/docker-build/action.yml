@@ -67,8 +67,6 @@ runs:
         echo ########################################
 
     - name: Build and push Docker image
-      env:
-        TOKEN:  ${{ inputs.TOKEN }}
       uses: docker/build-push-action@v6
       with:
         context: ${{ inputs.context }}
