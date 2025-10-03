@@ -17,8 +17,9 @@ jobs:
         uses: actions/checkout@v4
       - uses: pexip/shared-github-actions/.github/actions/release@master
         with:
-          version: ${{ inputs.VERSION }}
+          version: ${{ inputs.version }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          jira_webhook: ${{ secrets.jira_webhook }}
-          jira_artifact_name: freeswitch-cvp
-          jira_project_key: VJ
+          # Optional: Jira integration (uncomment and configure if needed)
+          # jira_webhook: ${{ secrets.JIRA_WEBHOOK }}
+          # jira_artifact_name: my-component-name
+          # jira_project_key: PROJECT

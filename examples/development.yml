@@ -32,7 +32,6 @@ jobs:
           repository: ${{ vars.DOCKER_REPO }}
           image_name: ${{ vars.DOCKER_IMAGE }}
           dockerfile: Dockerfile.debian
-          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
 
   docker-security-scan:
     needs: docker-build
@@ -51,7 +50,6 @@ jobs:
           image: ${{ needs.docker-build.outputs.image }}
           dockerfile: ${{ needs.docker-build.outputs.dockerfile }}
           snyk_token: ${{ secrets.SNYK_PEXIP_UNSORTED_ACCESS_TOKEN }}
-          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
 
   terraform-deploy:
     needs: docker-build
@@ -73,6 +71,4 @@ jobs:
       - uses: pexip/shared-github-actions/.github/actions/terraform-deploy-gcp@master
         with:
           directory: ./deploy
-          repository: ${{ vars.DOCKER_REPO }}
-          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
           token: ${{ secrets.GITHUB_TOKEN }}

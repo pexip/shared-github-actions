@@ -5,10 +5,10 @@ author: "havard.bakke@pexip.com"
 inputs:
   repository:
     required: true
-    description: The repository to deploy to
+    description: The Docker repository to push the image to
   image_name:
     required: true
-    description: Name of docker image to build and publish
+    description: Name of Docker image to build and publish
   context:
     required: false
     description: The context to use when building the image
@@ -16,17 +16,17 @@ inputs:
   push_image:
     required: false
     description: Should the image be pushed to the repository
-    default: true
+    default: "true"
   tag:
     required: false
-    description: Optional tag to apply to the docker image
+    description: Optional tag to apply to the Docker image
   dockerfile:
-    required: true
+    required: false
     default: ./Dockerfile
-    description: The docker file to use when building the image
+    description: The Dockerfile to use when building the image
   gh_token:
     required: false
-    description: A token used by the Dockerfile
+    description: A GitHub token used by the Dockerfile (passed as build secret)
 
 outputs:
   image:
@@ -39,8 +39,29 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Validate inputs
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.repository }}" ]; then
+          echo "Error: repository is required"
+          exit 1
+        fi
+        if [ -z "${{ inputs.image_name }}" ]; then
+          echo "Error: image_name is required"
+          exit 1
+        fi
+        if [ ! -f "${{ inputs.dockerfile }}" ]; then
+          echo "Error: Dockerfile not found at ${{ inputs.dockerfile }}"
+          exit 1
+        fi
+        if [ ! -d "${{ inputs.context }}" ]; then
+          echo "Error: Context directory not found at ${{ inputs.context }}"
+          exit 1
+        fi
+
     - name: Setup gcloud SDK
-      uses: google-github-actions/setup-gcloud@v2
+      if: contains(inputs.repository, 'pkg.dev') || contains(inputs.repository, 'gcr.io')
+      uses: google-github-actions/setup-gcloud@v3
 
     - name: Docker metadata
       id: metadata
@@ -78,7 +99,7 @@ runs:
         push: ${{ inputs.push_image }}
         tags: ${{ steps.metadata.outputs.tags }}
         labels: ${{ steps.metadata.outputs.labels }}
-        annotations: ${{ steps.meta.outputs.annotations }}
+        annotations: ${{ steps.metadata.outputs.annotations }}
 
     - name: Generate job summary
       shell: bash
