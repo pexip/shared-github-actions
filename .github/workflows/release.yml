@@ -3,22 +3,27 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Release version
+        description: Release version (e.g., v1.0.0)
         required: true
       pre_release:
-        type: boolean
-        default: false
-        description: Pre-release?
+        description: Mark as pre-release (true or false)
+        required: false
+        default: "false"
+
+permissions:
 
 jobs:
   release:
     runs-on: ubuntu-latest
     environment: production
+    permissions:
+      contents: write
+      issues: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - uses: ./.github/actions/release
         with:
-          version: ${{ inputs.VERSION }}
-          pre_release: ${{ inputs.PRE_RELEASE }}
+          version: ${{ inputs.version }}
+          pre_release: ${{ inputs.pre_release }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
