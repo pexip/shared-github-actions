@@ -116,7 +116,7 @@ Workload Identity Federation allows GitHub Actions to authenticate to GCP withou
 
 4. **Grant permissions to the Service Account:**
    ```bash
-   # Example: Grant Artifact Registry and Cloud Run permissions
+   # Example: Grant Artifact Registry
    gcloud projects add-iam-policy-binding ${PROJECT_ID} \
      --member="serviceAccount:github-actions-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
      --role="roles/artifactregistry.writer"
