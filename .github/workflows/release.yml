@@ -6,9 +6,10 @@ on:
         description: Release version (e.g., v1.0.0)
         required: true
       pre_release:
+        type: boolean
         description: Mark as pre-release (true or false)
         required: false
-        default: "false"
+        default: false
 
 permissions:
 
