@@ -11,6 +11,8 @@ on:
         required: false
         default: false
 
+permissions:
+
 jobs:
   release:
     runs-on: ubuntu-latest
