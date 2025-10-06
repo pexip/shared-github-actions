@@ -104,7 +104,7 @@ module.exports = {
       ? `**${planSummary.add}** to add, **${planSummary.change}** to change, **${planSummary.destroy}** to destroy`
       : 'No changes';
 
-    // P2: Add warning for destroys
+    // If the plan will destroy resources, add a prominent warning to alert reviewers to potential impact
     const destroyWarning = planSummary && planSummary.destroy > 0
       ? `\n> ⚠️ **Warning:** This plan will **destroy ${planSummary.destroy}** resource(s). Review carefully before applying.\n`
       : '';
