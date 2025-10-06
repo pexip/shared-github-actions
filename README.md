@@ -13,22 +13,22 @@ GitHub Actions workflows and actions accessible to all Pexip workflows. This rep
 
 ### Authentication
 
-- **[auth-gcp](.github/actions/auth-gcp)** - Authenticate with Google Cloud Platform using service account key or workload identity federation
-- **[auth-github](.github/actions/auth-github)** - Authenticate with GitHub Container Registry
+- **[auth-gcp-action](auth-gcp-action)** - Authenticate with Google Cloud Platform using service account key or workload identity federation
+- **[auth-github-action](auth-github-action)** - Authenticate with GitHub Container Registry
 
 ### Docker
 
-- **[docker-build](.github/actions/docker-build)** - Build and push Docker images with automatic tagging and metadata
-- **[docker-security-scan](.github/actions/docker-security-scan)** - Security scan Docker images using Snyk
+- **[docker-build-action](docker-build-action)** - Build and push Docker images with automatic tagging and metadata
+- **[docker-security-scan-action](docker-security-scan-action)** - Security scan Docker images using Snyk
 
 ### Terraform
 
-- **[terraform-deploy-gcp](.github/actions/terraform-deploy-gcp)** - Deploy infrastructure to GCP using Terraform (init, validate, plan, apply)
-- **[terraform-deploy-openstack](.github/actions/terraform-deploy-openstack)** - Deploy infrastructure to OpenStack using Terraform
+- **[terraform-deploy-gcp-action](terraform-deploy-gcp-action)** - Deploy infrastructure to GCP using Terraform (init, validate, plan, apply)
+- **[terraform-deploy-openstack-action](terraform-deploy-openstack-action)** - Deploy infrastructure to OpenStack using Terraform
 
 ### Release
 
-- **[release](.github/actions/release)** - Create GitHub releases with auto-generated notes and optional Jira integration
+- **[release-action](release-action)** - Create GitHub releases with auto-generated notes and optional Jira integration
 
 ### Security Tools
 
@@ -41,7 +41,7 @@ GitHub Actions workflows and actions accessible to all Pexip workflows. This rep
 Reference actions from this repository using the following pattern:
 
 ```yaml
-uses: pexip/shared-github-actions/.github/actions/{action-name}@{ref}
+uses: pexip/shared-github-actions/{action-name}@{ref}
 ```
 
 ### Example: Build and Push Docker Image
@@ -51,12 +51,12 @@ steps:
   - name: Checkout
     uses: actions/checkout@v4
 
-  - uses: pexip/shared-github-actions/.github/actions/auth-gcp@master
+  - uses: pexip/shared-github-actions/auth-gcp-action@master
     with:
       repository: ${{ vars.DOCKER_REPO }}
       service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
 
-  - uses: pexip/shared-github-actions/.github/actions/docker-build@master
+  - uses: pexip/shared-github-actions/docker-build-action@master
     with:
       repository: ${{ vars.DOCKER_REPO }}
       image_name: my-application
@@ -70,12 +70,12 @@ steps:
   - name: Checkout
     uses: actions/checkout@v4
 
-  - uses: pexip/shared-github-actions/.github/actions/auth-gcp@master
+  - uses: pexip/shared-github-actions/auth-gcp-action@master
     with:
       repository: ${{ vars.DOCKER_REPO }}
       service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
 
-  - uses: pexip/shared-github-actions/.github/actions/terraform-deploy-gcp@master
+  - uses: pexip/shared-github-actions/terraform-deploy-gcp-action@master
     with:
       directory: ./deploy
       token: ${{ secrets.GITHUB_TOKEN }}
@@ -147,13 +147,13 @@ steps:
   - name: Checkout
     uses: actions/checkout@v4
 
-  - uses: pexip/shared-github-actions/.github/actions/auth-gcp@master
+  - uses: pexip/shared-github-actions/auth-gcp-action@master
     with:
       repository: ${{ vars.DOCKER_REPO }}
       workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
       service_account: ${{ vars.SERVICE_ACCOUNT_EMAIL }}
 
-  - uses: pexip/shared-github-actions/.github/actions/docker-build@master
+  - uses: pexip/shared-github-actions/docker-build-action@master
     with:
       repository: ${{ vars.DOCKER_REPO }}
       image_name: my-application
@@ -167,7 +167,7 @@ steps:
   - name: Checkout
     uses: actions/checkout@v4
 
-  - uses: pexip/shared-github-actions/.github/actions/release@master
+  - uses: pexip/shared-github-actions/release-action@master
     with:
       version: v1.0.0
       github_token: ${{ secrets.GITHUB_TOKEN }}

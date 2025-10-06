@@ -89,7 +89,7 @@ runs:
       with:
         github-token: ${{ inputs.token }}
         script: |
-          const prComment = require('${{ github.action_path }}/../_shared/terraform-pr-comment.js');
+          const prComment = require('${{ github.workspace }}/_shared/terraform-pr-comment.js');
 
           await prComment.createOrUpdatePRComment({
             github,

@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: pexip/shared-github-actions/.github/actions/release@master
+      - uses: pexip/shared-github-actions/release-action@master
         with:
           version: ${{ inputs.version }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

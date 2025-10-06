@@ -24,7 +24,7 @@ jobs:
 
       - name: Create release
         id: create-release
-        uses: ./.github/actions/release
+        uses: ./release-action
         with:
           version: ${{ inputs.version }}
           pre_release: ${{ inputs.pre_release }}
