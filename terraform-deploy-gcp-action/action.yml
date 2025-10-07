@@ -1,29 +1,40 @@
 name: Terraform deploy
-description: Deploys resources to GCP using terraform
+description: Deploys resources to GCP using Terraform
 author: "havard.bakke@pexip.com"
 
 inputs:
   deploy_on_pull:
     required: false
     description: Should pull requests be deployed
-    default: false
+    default: "false"
   continue_on_security_warnings:
     required: false
     description: Should the pipeline block on security warnings
-    default: false
+    default: "false"
   directory:
-    required: true
+    required: false
     default: ./deploy
-    description: The directory within the repo containing the terraform code
+    description: The directory within the repo containing the Terraform code
   token:
     required: false
-    description: The secrets.GITHUB_TOKEN
+    description: The GitHub token (secrets.GITHUB_TOKEN) - required for PR comments
 
 runs:
   using: "composite"
   steps:
+    - name: Validate inputs
+      shell: bash
+      run: |
+        if [ ! -d "${{ inputs.directory }}" ]; then
+          echo "Error: Terraform directory not found at ${{ inputs.directory }}"
+          exit 1
+        fi
+        if [ "${{ github.event_name }}" == "pull_request" ] && [ -z "${{ inputs.token }}" ]; then
+          echo "Warning: token is not provided. PR comments will be skipped."
+        fi
+
     - name: Setup gcloud SDK
-      uses: google-github-actions/setup-gcloud@v2
+      uses: google-github-actions/setup-gcloud@v3
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
@@ -50,7 +61,7 @@ runs:
 
     - name: Run Trivy vulnerability scanner
       id: trivy
-      uses: aquasecurity/trivy-action@0.29.0
+      uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 #0.33.1
       with:
         scan-ref: ${{ inputs.directory }}
         scan-type: 'fs'
@@ -74,61 +85,31 @@ runs:
 
     - name: Pull Request Comment
       uses: actions/github-script@v7
-      if: github.event_name == 'pull_request'
-      env:
-        PLAN: "${{ steps.plan.outputs.stdout }}"
+      if: github.event_name == 'pull_request' && inputs.token != ''
       with:
         github-token: ${{ inputs.token }}
         script: |
-          const { data: comments } = await github.rest.issues.listComments({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: context.issue.number,
-          })
-          const botComment = comments.find(comment => {
-            return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
-          })
+          const prComment = require('${{ github.workspace }}/_shared/terraform-pr-comment.js');
 
-          const output = `#### Terraform Format and Style 🖌 \`${{ steps.fmt.outcome }}\`
-          #### Terraform Initialization ⚙️ \`${{ steps.init.outcome }}\`
-          #### Terraform Validation 🤖 \`${{ steps.validate.outcome }}\`
-          <details><summary>Validation Output</summary>
-
-          \`\`\`\n
-          ${{ steps.validate.outputs.stdout }}
-          \`\`\`
-
-          </details>
-
-          #### Terraform Plan 📖 \`${{ steps.plan.outcome }}\`
-
-          <details><summary>Show Plan</summary>
-
-          \`\`\`terraform\n
-          ${process.env.PLAN}
-          \`\`\`
-
-          </details>`;
-
-          if (botComment) {
-            github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: botComment.id,
-              body: output
-            })
-          } else {
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
-          }
+          await prComment.createOrUpdatePRComment({
+            github,
+            context,
+            core,
+            directory: '${{ inputs.directory }}',
+            platform: 'gcp',
+            outcomes: {
+              fmt: '${{ steps.fmt.outcome }}',
+              init: '${{ steps.init.outcome }}',
+              validate: '${{ steps.validate.outcome }}',
+              trivy: '${{ steps.trivy.outcome }}',
+              plan: '${{ steps.plan.outcome }}'
+            },
+            validationOutput: `${{ steps.validate.outputs.stdout }}`
+          });
 
     - name: Terraform Status
       id: status
-      if: steps.plan.outcome == 'failure' || steps.validate.outcome == 'failure' || steps.init.outcome == 'failure' || steps.fmt.outcome == 'failure'
+      if: steps.plan.outcome == 'failure' || steps.validate.outcome == 'failure' || steps.init.outcome == 'failure' || steps.fmt.outcome == 'failure' || (steps.trivy.outcome == 'failure' && inputs.continue_on_security_warnings != 'true')
       working-directory: ${{ inputs.directory }}
       shell: bash
       run: |
@@ -136,11 +117,12 @@ runs:
         echo Terraform Validate: ${{ steps.validate.outcome }}
         echo Terraform Init: ${{ steps.init.outcome }}
         echo Terraform Fmt: ${{ steps.fmt.outcome }}
+        echo Trivy Scan: ${{ steps.trivy.outcome }}
         exit 1
 
     - name: Terraform Apply
       id: apply
-      if: ((github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push') || (inputs.deploy_on_pull == 'true' && github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch')
+      if: ((github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push') || (inputs.deploy_on_pull == 'true' && github.event_name == 'pull_request') || github.event_name == 'workflow_dispatch'
       working-directory: ${{ inputs.directory }}
       shell: bash
       run: terraform apply -auto-approve terraform.plan

@@ -1,0 +1,54 @@
+name: Security scan a Docker image
+description: Security scans a Docker image using Snyk
+author: "havard.bakke@pexip.com"
+
+inputs:
+  image:
+    required: true
+    description: Name of Docker image to scan
+  dockerfile:
+    required: false
+    default: ./Dockerfile
+    description: The Dockerfile used when building the image
+  snyk_platform:
+    required: false
+    default: linux/amd64
+    description: Docker image platform to scan
+  snyk_token:
+    required: false
+    description: A token used by Snyk to scan Docker image for vulnerabilities
+  snyk_threshold:
+    required: false
+    default: medium
+    description: Snyk severity threshold (low, medium, high, critical)
+runs:
+  using: "composite"
+  steps:
+    - name: Validate inputs
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.image }}" ]; then
+          echo "Error: image is required"
+          exit 1
+        fi
+        if [ -z "${{ inputs.snyk_token }}" ]; then
+          echo "Warning: snyk_token is not provided. Skipping security scan."
+        fi
+
+    - name: Setup gcloud SDK
+      if: contains(inputs.image, 'pkg.dev') || contains(inputs.image, 'gcr.io')
+      uses: google-github-actions/setup-gcloud@v3
+
+    - name: Setup Snyk
+      id: snyk-setup
+      if: ${{ inputs.snyk_token != '' }}
+      uses: snyk/actions/setup@master
+
+    - name: Security scan Docker image
+      id: snyk
+      if: ${{ inputs.snyk_token != '' }}
+      shell: bash
+      env:
+        SNYK_TOKEN: ${{ inputs.snyk_token }}
+      run: |
+        snyk container test ${{ inputs.image }} --platform=${{ inputs.snyk_platform }} --severity-threshold=${{ inputs.snyk_threshold }} --file=${{ inputs.dockerfile }}

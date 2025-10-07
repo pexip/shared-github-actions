@@ -21,18 +21,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: pexip/shared-github-actions/.github/actions/auth-gcp@master
+      - uses: pexip/shared-github-actions/auth-gcp-action@master
         id: auth-gcp
         with:
           repository: ${{ vars.DOCKER_REPO }}
           service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
-      - uses: pexip/shared-github-actions/.github/actions/docker-build@master
+      - uses: pexip/shared-github-actions/docker-build-action@master
         id: build
         with:
           repository: ${{ vars.DOCKER_REPO }}
           image_name: ${{ vars.DOCKER_IMAGE }}
           dockerfile: Dockerfile.debian
-          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
 
   docker-security-scan:
     needs: docker-build
@@ -41,17 +40,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: pexip/shared-github-actions/.github/actions/auth-gcp@master
+      - uses: pexip/shared-github-actions/auth-gcp-action@master
         id: auth-gcp
         with:
           repository: ${{ vars.DOCKER_REPO }}
           service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
-      - uses: pexip/shared-github-actions/.github/actions/docker-security-scan@master
+      - uses: pexip/shared-github-actions/docker-security-scan-action@master
         with:
           image: ${{ needs.docker-build.outputs.image }}
           dockerfile: ${{ needs.docker-build.outputs.dockerfile }}
           snyk_token: ${{ secrets.SNYK_PEXIP_UNSORTED_ACCESS_TOKEN }}
-          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
 
   terraform-deploy:
     needs: docker-build
@@ -65,14 +63,12 @@ jobs:
         run: |
           echo "TF_VAR_project_id=${{ vars.DEPLOY_PROJECT_ID }}" >> $GITHUB_ENV
           echo "TF_VAR_container=${{ needs.docker-build.outputs.tags }}" >> $GITHUB_ENV
-      - uses: pexip/shared-github-actions/.github/actions/auth-gcp@master
+      - uses: pexip/shared-github-actions/auth-gcp-action@master
         id: auth-gcp
         with:
           repository: ${{ vars.DOCKER_REPO }}
           service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
-      - uses: pexip/shared-github-actions/.github/actions/terraform-deploy-gcp@master
+      - uses: pexip/shared-github-actions/terraform-deploy-gcp-action@master
         with:
           directory: ./deploy
-          repository: ${{ vars.DOCKER_REPO }}
-          service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
           token: ${{ secrets.GITHUB_TOKEN }}

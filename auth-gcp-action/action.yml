@@ -5,7 +5,7 @@ author: "havard.bakke@pexip.com"
 inputs:
   repository:
     required: false
-    description: The repository to deploy to
+    description: The GCP hosted repository to use
   service_account_key:
     required: false
     description: The GCP service account JSON key used to authenticate towards Google
@@ -19,15 +19,27 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Authenticate towards Google
+    - name: Validate authentication inputs
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.service_account_key }}" ] && [ -z "${{ inputs.workload_identity_provider }}" ]; then
+          echo "Error: Either service_account_key or workload_identity_provider must be provided"
+          exit 1
+        fi
+        if [ -n "${{ inputs.workload_identity_provider }}" ] && [ -z "${{ inputs.service_account }}" ]; then
+          echo "Error: service_account is required when using workload_identity_provider"
+          exit 1
+        fi
+
+    - name: Authenticate towards Google (service account key)
       if: ${{ inputs.service_account_key != '' }}
-      uses: google-github-actions/auth@v2
+      uses: google-github-actions/auth@v3
       with:
         credentials_json: ${{ inputs.service_account_key }}
 
-    - name: Authenticate towards Google
+    - name: Authenticate towards Google (workload identity)
       if: ${{ inputs.workload_identity_provider != '' }}
-      uses: google-github-actions/auth@v2
+      uses: google-github-actions/auth@v3
       with:
         token_format: access_token
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
@@ -35,10 +47,9 @@ runs:
 
     - name: Setup gcloud SDK
       if: ${{ inputs.repository != '' }}
-      uses: google-github-actions/setup-gcloud@v2
+      uses: google-github-actions/setup-gcloud@v3
 
     - name: Configure Docker repository
       if: ${{ inputs.repository != '' }}
-      working-directory: ${{ inputs.directory }}
       shell: bash
       run: gcloud auth configure-docker ${{ inputs.repository }}

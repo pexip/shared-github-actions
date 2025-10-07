@@ -24,10 +24,11 @@ jobs:
         shell: bash
         run: |
           echo "TF_VAR_project_id=${{ vars.DEPLOY_PROJECT_ID }}" >> $GITHUB_ENV
-          echo "TF_VAR_container=${{ needs.docker-build.outputs.tags }}" >> $GITHUB_ENV
-      - uses: pexip/shared-github-actions/.github/actions/terraform-deploy-gcp@master
+      - uses: pexip/shared-github-actions/auth-gcp-action@master
         with:
-          directory: ./deploy
           repository: ${{ vars.DOCKER_REPO }}
           service_account_key: ${{ secrets.DEPLOY_SERVICE_ACCOUNT_KEY }}
+      - uses: pexip/shared-github-actions/terraform-deploy-gcp-action@master
+        with:
+          directory: ./deploy
           token: ${{ secrets.GITHUB_TOKEN }}

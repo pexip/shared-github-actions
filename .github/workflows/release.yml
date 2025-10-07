@@ -11,6 +11,8 @@ on:
         required: false
         default: false
 
+permissions:
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -21,8 +23,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/actions/release
+
+      - name: Create release
+        id: create-release
+        uses: ./release-action
         with:
           version: ${{ inputs.version }}
           pre_release: ${{ inputs.pre_release }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate job summary
+        shell: bash
+        run: |
+          echo "## Release Created Successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: ${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Pre-release**: ${{ inputs.pre_release }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Release URL**: https://github.com/${{ github.repository }}/releases/tag/${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
