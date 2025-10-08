@@ -71,6 +71,7 @@ runs:
         exit-code: '1'
         ignore-unfixed: true
         severity: 'MEDIUM,HIGH,CRITICAL'
+        skip-dirs: '**/.terraform'
         github-pat: ${{ inputs.token }}
       continue-on-error: ${{ inputs.continue_on_security_warnings == 'true' }}
 
