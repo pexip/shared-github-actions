@@ -73,6 +73,7 @@ runs:
         severity: 'MEDIUM,HIGH,CRITICAL'
         skip-dirs: '**/.terraform'
         github-pat: ${{ inputs.token }}
+        version: v0.67.0
       continue-on-error: ${{ inputs.continue_on_security_warnings == 'true' }}
 
     - name: Terraform Plan
