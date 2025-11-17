@@ -113,6 +113,6 @@ runs:
       run: |
         echo "Built docker image:" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
-        echo "- Image: ${{ steps.primary-image.outputs.primary_image }}" >> $GITHUB_STEP_SUMMARY
-        echo "- TAGS: \n${{ steps.metadata.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Name: ${{ steps.primary-image.outputs.primary_image }}" >> $GITHUB_STEP_SUMMARY
+        echo -e "- TAGS: \n${{ steps.metadata.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
