@@ -79,7 +79,7 @@ runs:
       id: primary-image
       shell: bash
       run: |
-        PRIMARY_IMAGE=$(echo "${{ steps.metadata.outputs.image }}" | head -n1)
+        PRIMARY_IMAGE=$(echo "${{ steps.metadata.outputs.tags }}" | tail -n1)
         echo "primary_image=$PRIMARY_IMAGE" >> $GITHUB_OUTPUT
 
     - name: Set up Docker Buildx to enable caching
@@ -113,6 +113,6 @@ runs:
       run: |
         echo "Built docker image:" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
-        echo "- Name:  ${{ inputs.repository }}/${{ inputs.image_name }}" >> $GITHUB_STEP_SUMMARY        
-        echo "- TAGS: ${{ steps.metadata.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Image: ${{ steps.primary-image.outputs.primary_image }}" >> $GITHUB_STEP_SUMMARY
+        echo "- TAGS: \n${{ steps.metadata.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
