@@ -13,6 +13,7 @@ GitHub Actions workflows and actions accessible to all Pexip workflows. This rep
 
 ### Authentication
 
+- **[auth-azure-action](auth-azure-action)** - Authenticate with Microsoft Azure using service principal credentials or workload identity (OIDC)
 - **[auth-gcp-action](auth-gcp-action)** - Authenticate with Google Cloud Platform using service account key or workload identity federation
 - **[auth-github-action](auth-github-action)** - Authenticate with GitHub Container Registry
 
@@ -160,6 +161,54 @@ steps:
       dockerfile: Dockerfile
 ```
 
+### Example: Authenticate with Azure
+
+Azure authentication supports two methods:
+
+#### Service Principal (credentials JSON)
+
+```yaml
+steps:
+  - name: Checkout
+    uses: actions/checkout@v4
+
+  - uses: pexip/shared-github-actions/auth-azure-action@master
+    with:
+      credentials: ${{ secrets.AZURE_CREDENTIALS }}
+      registry: myregistry.azurecr.io
+```
+
+The `AZURE_CREDENTIALS` secret should contain JSON in this format:
+```json
+{
+  "clientId": "<client-id>",
+  "clientSecret": "<client-secret>",
+  "subscriptionId": "<subscription-id>",
+  "tenantId": "<tenant-id>"
+}
+```
+
+#### Workload Identity (OIDC)
+
+For enhanced security without storing secrets, use OIDC/Workload Identity:
+
+```yaml
+permissions:
+  id-token: write
+  contents: read
+
+steps:
+  - name: Checkout
+    uses: actions/checkout@v4
+
+  - uses: pexip/shared-github-actions/auth-azure-action@master
+    with:
+      client_id: ${{ secrets.AZURE_CLIENT_ID }}
+      tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+      subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      registry: myregistry.azurecr.io
+```
+
 ### Example: Create a Release
 
 ```yaml
@@ -185,6 +234,10 @@ Configure these secrets in your repository settings:
 
 ### Optional Secrets
 
+- **`AZURE_CREDENTIALS`** - Azure service principal credentials JSON (if using auth-azure-action with service principal)
+- **`AZURE_CLIENT_ID`** - Azure application client ID (if using auth-azure-action with workload identity)
+- **`AZURE_TENANT_ID`** - Azure AD tenant ID (if using auth-azure-action with workload identity)
+- **`AZURE_SUBSCRIPTION_ID`** - Azure subscription ID (if using auth-azure-action with workload identity)
 - **`jira_webhook`** - Jira automation webhook URL for release integration
 
 ### Required Variables

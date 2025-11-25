@@ -1,0 +1,54 @@
+name: Authenticate towards Azure
+description: Authenticate towards Microsoft Azure
+author: "havard.bakke@pexip.com"
+
+inputs:
+  registry:
+    required: false
+    description: The Azure Container Registry to authenticate against (e.g., myregistry.azurecr.io)
+  credentials:
+    required: false
+    description: Azure service principal credentials JSON (for service principal auth)
+  client_id:
+    required: false
+    description: The Azure application (service principal) client ID (for OIDC/workload identity)
+  tenant_id:
+    required: false
+    description: The Azure AD tenant ID (for OIDC/workload identity)
+  subscription_id:
+    required: false
+    description: The Azure subscription ID (for OIDC/workload identity)
+
+runs:
+  using: "composite"
+  steps:
+    - name: Validate authentication inputs
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.credentials }}" ] && [ -z "${{ inputs.client_id }}" ]; then
+          echo "Error: Either credentials (service principal) or client_id (workload identity) must be provided"
+          exit 1
+        fi
+        if [ -n "${{ inputs.client_id }}" ] && ([ -z "${{ inputs.tenant_id }}" ] || [ -z "${{ inputs.subscription_id }}" ]); then
+          echo "Error: tenant_id and subscription_id are required when using workload identity (client_id)"
+          exit 1
+        fi
+
+    - name: Authenticate towards Azure (service principal)
+      if: ${{ inputs.credentials != '' }}
+      uses: azure/login@v2
+      with:
+        creds: ${{ inputs.credentials }}
+
+    - name: Authenticate towards Azure (workload identity/OIDC)
+      if: ${{ inputs.credentials == '' }}
+      uses: azure/login@v2
+      with:
+        client-id: ${{ inputs.client_id }}
+        tenant-id: ${{ inputs.tenant_id }}
+        subscription-id: ${{ inputs.subscription_id }}
+
+    - name: Login to Azure Container Registry
+      if: ${{ inputs.registry != '' }}
+      shell: bash
+      run: az acr login --name $(echo ${{ inputs.registry }} | cut -d'.' -f1)
