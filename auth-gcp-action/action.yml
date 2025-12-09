@@ -53,3 +53,7 @@ runs:
       if: ${{ inputs.repository != '' }}
       shell: bash
       run: gcloud auth configure-docker ${{ inputs.repository }}
+
+    - name: Debug
+      shell: bash
+      run: cat ~/.docker/config.json
