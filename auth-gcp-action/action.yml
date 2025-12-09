@@ -52,7 +52,7 @@ runs:
     - name: Configure Docker repository
       if: ${{ inputs.repository != '' }}
       shell: bash
-      run: gcloud auth configure-docker ${{ inputs.repository }}
+      run: gcloud auth configure-docker europe-west3-docker.pkg.dev
 
     - name: Debug
       shell: bash
