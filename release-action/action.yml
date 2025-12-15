@@ -45,6 +45,20 @@ runs:
           fi
         fi
 
+    - name: Create release branch
+      shell: bash
+      run: |
+        VERSION="${{ inputs.version }}"
+        BRANCH_NAME="releases/${VERSION}"
+
+        git config user.name "GitHub Actions"
+        git config user.email noreply@github.com
+
+        git checkout -b "${BRANCH_NAME}"
+        git push origin "${BRANCH_NAME}"
+
+        echo "Created and pushed branch: ${BRANCH_NAME}"
+
     - name: Create release
       uses: actions/github-script@v7
       with:
