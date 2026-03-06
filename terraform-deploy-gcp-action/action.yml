@@ -11,6 +11,10 @@ inputs:
     required: false
     description: Should the pipeline block on security warnings
     default: "false"
+  skip_trivy_scan:
+    required: false
+    description: Should the Trivy vulnerability scan be skipped
+    default: "false"
   directory:
     required: false
     default: ./deploy
@@ -60,8 +64,9 @@ runs:
       continue-on-error: true
 
     - name: Run Trivy vulnerability scanner
+      if: inputs.skip_trivy_scan != 'true'
       id: trivy
-      uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 #0.33.1
+      uses: aquasecurity/trivy-action@97e0b3872f55f89b95b2f65b3dbab56962816478 #0.34.2
       with:
         scan-ref: ${{ inputs.directory }}
         scan-type: 'fs'
@@ -73,7 +78,6 @@ runs:
         severity: 'MEDIUM,HIGH,CRITICAL'
         skip-dirs: '**/.terraform'
         github-pat: ${{ inputs.token }}
-        version: v0.67.0
       continue-on-error: ${{ inputs.continue_on_security_warnings == 'true' }}
 
     - name: Terraform Plan
