@@ -20,7 +20,7 @@ jobs:
       dockerfile: ${{ steps.build.outputs.dockerfile }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - uses: pexip/shared-github-actions/auth-gcp-action@master
         id: auth-gcp
         with:
@@ -39,7 +39,7 @@ jobs:
     environment: development
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - uses: pexip/shared-github-actions/auth-gcp-action@master
         id: auth-gcp
         with:
@@ -57,7 +57,7 @@ jobs:
     environment: development
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set Terraform variables
         shell: bash
         run: |
