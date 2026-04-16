@@ -122,7 +122,7 @@ module.exports = {
     return `${identifier}
 ## ${emoji} Terraform Plan Results - ${name}
 
-**Commit:** \`${commitSha}\` | **Triggered:** ${timestamp}
+**Directory:** \`${directory}\` | **Commit:** \`${commitSha}\` | **Triggered:** ${timestamp}
 
 ### Step Results
 
