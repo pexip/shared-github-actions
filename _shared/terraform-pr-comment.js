@@ -55,6 +55,7 @@ module.exports = {
       // Generate comment content
       const output = this.generateComment({
         platform,
+        directory,
         planOutput,
         planSummary,
         truncated,
@@ -65,7 +66,7 @@ module.exports = {
       });
 
       // Update or create comment
-      await this.updateOrCreateComment({ github, context, output, platform });
+      await this.updateOrCreateComment({ github, context, output, platform, directory });
 
     } catch (error) {
       // Don't fail the workflow if comment fails
@@ -87,9 +88,12 @@ module.exports = {
     outcomes,
     validationOutput,
     commitSha,
-    timestamp
+    timestamp,
+    directory
   }) {
-    const identifier = `<!-- terraform-deploy-${platform}-comment -->`;
+    // Create unique identifier based on platform and directory to support multiple deployments
+    const dirHash = crypto.createHash('md5').update(directory).digest('hex').substring(0, 8);
+    const identifier = `<!-- terraform-deploy-${platform}-${dirHash}-comment -->`;
 
     // Platform-specific emoji/branding
     const platformInfo = {
@@ -163,8 +167,10 @@ ${truncated ? '\n⚠️ **Plan truncated due to size limits. View full plan in w
    * Update existing comment or create new one
    * @param {Object} params - Parameters object
    */
-  async updateOrCreateComment({ github, context, output, platform }) {
-    const identifier = `<!-- terraform-deploy-${platform}-comment -->`;
+  async updateOrCreateComment({ github, context, output, platform, directory }) {
+    // Create unique identifier based on platform and directory to support multiple comments for different deployments in the same PR
+    const dirHash = crypto.createHash('md5').update(directory).digest('hex').substring(0, 8);
+    const identifier = `<!-- terraform-deploy-${platform}-${dirHash}-comment -->`;
 
     // Find existing comment by unique identifier
     const { data: comments } = await github.rest.issues.listComments({
