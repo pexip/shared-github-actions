@@ -50,7 +50,7 @@ uses: pexip/shared-github-actions/{action-name}@{ref}
 ```yaml
 steps:
   - name: Checkout
-    uses: actions/checkout@v6
+    uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
 
   - uses: pexip/shared-github-actions/auth-gcp-action@master
     with:
@@ -69,7 +69,7 @@ steps:
 ```yaml
 steps:
   - name: Checkout
-    uses: actions/checkout@v6
+    uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
 
   - uses: pexip/shared-github-actions/auth-gcp-action@master
     with:
@@ -146,7 +146,7 @@ Workload Identity Federation allows GitHub Actions to authenticate to GCP withou
 ```yaml
 steps:
   - name: Checkout
-    uses: actions/checkout@v6
+    uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
 
   - uses: pexip/shared-github-actions/auth-gcp-action@master
     with:
@@ -170,7 +170,7 @@ Azure authentication supports two methods:
 ```yaml
 steps:
   - name: Checkout
-    uses: actions/checkout@v6
+    uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
 
   - uses: pexip/shared-github-actions/auth-azure-action@master
     with:
@@ -199,7 +199,7 @@ permissions:
 
 steps:
   - name: Checkout
-    uses: actions/checkout@v6
+    uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
 
   - uses: pexip/shared-github-actions/auth-azure-action@master
     with:
@@ -214,7 +214,7 @@ steps:
 ```yaml
 steps:
   - name: Checkout
-    uses: actions/checkout@v6
+    uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
 
   - uses: pexip/shared-github-actions/release-action@master
     with:
