@@ -33,13 +33,13 @@ runs:
 
     - name: Authenticate towards Google (service account key)
       if: ${{ inputs.service_account_key != '' }}
-      uses: google-github-actions/auth@v3
+      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 #v3.0.0
       with:
         credentials_json: ${{ inputs.service_account_key }}
 
     - name: Authenticate towards Google (workload identity)
       if: ${{ inputs.workload_identity_provider != '' }}
-      uses: google-github-actions/auth@v3
+      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 #v3.0.0
       with:
         token_format: access_token
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
@@ -47,7 +47,7 @@ runs:
 
     - name: Setup gcloud SDK
       if: ${{ inputs.repository != '' }}
-      uses: google-github-actions/setup-gcloud@v3
+      uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
 
     - name: Configure Docker repository
       if: ${{ inputs.repository != '' }}
