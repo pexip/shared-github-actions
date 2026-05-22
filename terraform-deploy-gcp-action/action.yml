@@ -92,14 +92,13 @@ runs:
     - name: Pull Request Comment
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 #v9.0.0
       if: github.event_name == 'pull_request' && inputs.token != ''
+      env:
+        VALIDATION_OUTPUT: ${{ steps.validate.outputs.stdout }}
       with:
         github-token: ${{ inputs.token }}
         script: |
           const path = require('path');
           const prComment = require(path.join('${{ github.action_path }}', '..', '_shared', 'terraform-pr-comment.js'));
-
-          // Escape backticks in validation output to prevent syntax errors
-          const validationOutput = `${{ steps.validate.outputs.stdout }}`.replace(/`/g, '\\`');
 
           await prComment.createOrUpdatePRComment({
             github,
@@ -114,7 +113,7 @@ runs:
               trivy: '${{ steps.trivy.outcome }}',
               plan: '${{ steps.plan.outcome }}'
             },
-            validationOutput
+            validationOutput: process.env.VALIDATION_OUTPUT || ''
           });
 
     - name: Terraform Status
