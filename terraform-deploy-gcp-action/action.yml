@@ -98,6 +98,9 @@ runs:
           const path = require('path');
           const prComment = require(path.join('${{ github.action_path }}', '..', '_shared', 'terraform-pr-comment.js'));
 
+          // Escape backticks in validation output to prevent syntax errors
+          const validationOutput = `${{ steps.validate.outputs.stdout }}`.replace(/`/g, '\\`');
+
           await prComment.createOrUpdatePRComment({
             github,
             context,
@@ -111,7 +114,7 @@ runs:
               trivy: '${{ steps.trivy.outcome }}',
               plan: '${{ steps.plan.outcome }}'
             },
-            validationOutput: `${{ steps.validate.outputs.stdout }}`
+            validationOutput
           });
 
     - name: Terraform Status
